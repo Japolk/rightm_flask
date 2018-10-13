@@ -33,7 +33,7 @@ def get_listing_agency(url):
     html_page= requests.get(url).content
     tree = html.fromstring(html_page)
     try:
-        agency = tree.xpath("//div[@class='agent-details-display']/p[@class='pad-0']/a/strong")[0].text.strip()
+        agency = tree.xpath("//a[@id='aboutBranchLink']/strong")[0].text.strip()
         return agency
     except IndexError:
         return ''
@@ -54,9 +54,8 @@ def get_listing_image_links(url):
     return links
 
 
-def return_if_listing_is_in_db(url):
+def get_listing_from_db(id):
     """return listing from the Db if it's already there"""
-    id = get_listig_id(url)
     listing_item = Listing.query.filter_by(id=id).first()
     if not listing_item:
         return None
@@ -82,9 +81,9 @@ def get_listing_from_rightmove(url):
     return listing_item
 
 
-def make_response(inner=None):
-    if isinstance(inner, str):
-        return {'message': inner}, 404
-    if isinstance(inner,Listing):
-        return {'listing': inner.serialize}, 200
+def make_response(response):
+    if isinstance(response, str):
+        return {'message': response}, 404
+    if isinstance(response, list):
+        return {'listings': [part.serialize if isinstance(part, Listing) else part for part in response ]}, 200
     return {'message':'ALL GONE WRONG'}, 404

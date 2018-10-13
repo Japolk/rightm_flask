@@ -1,7 +1,7 @@
 from flask_restful import Resource, Api, reqparse
 from . import app
-from .db import Listing
-from .utils import get_listing_from_rightmove, return_if_listing_is_in_db, make_response
+from .db import db, Listing
+from .utils import get_listing_from_rightmove, get_listing_from_db, make_response, get_listig_id
 
 api = Api(app)
 
@@ -9,30 +9,37 @@ api = Api(app)
 class ListingView(Resource):
 
     def get(self):
-        listings = Listing.query.all()
-        print(listings[0].price)
         return {'listing' : 'okay'}, 200
 
 
     def post(self):
-        """Request Parsing"""
+        listing_list = []
+        """Request Parameters Parsing"""
         parser = reqparse.RequestParser()
-        parser.add_argument('url', type=str)
-        listing_url = parser.parse_args()['url']
-        print(parser.parse_args())
-        if not listing_url:
+        parser.add_argument('urls', type=str, action='append')
+        listing_urls = parser.parse_args()['urls']
+        if not listing_urls:
             return make_response('bad request!!!11')
 
-        """Check if listing is already in DB"""
-        listing_item = return_if_listing_is_in_db(listing_url)
-        if listing_item:
-            return make_response(listing_item)
+        """Get listings from Rightmove or from DB"""
+        input_listings_dict = {get_listig_id(url) : url for url in listing_urls}
+        already_saved_listing_ids = [x[0] for x in db.session.query(Listing.id).filter(Listing.id.in_(input_listings_dict)).all()]
 
-        """Get listing form RightMove and save to DB"""
-        listing_item = get_listing_from_rightmove(listing_url)
-        if not listing_item:
-            return make_response('bad url')
-        listing_item.save_to_db()
-        return make_response(listing_item)
+        for id, url in input_listings_dict.items():
+            if id in already_saved_listing_ids:
+                listing_list.append(get_listing_from_db(id))
+            else:
+                listing_item = get_listing_from_rightmove(url)
+                """check if come broken links were in request"""
+                if listing_item:
+                    listing_item.save_to_db()
+                    listing_list.append(listing_item)
+                else: listing_list.append('wrong link')
+
+
+        print(listing_list)
+        return make_response(listing_list)
+
 
 api.add_resource(ListingView, '/')
+
