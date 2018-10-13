@@ -80,3 +80,11 @@ def get_listing_from_rightmove(url):
                            image_links=links,
                            )
     return listing_item
+
+
+def make_response(inner=None):
+    if isinstance(inner, str):
+        return {'message': inner}, 404
+    if isinstance(inner,Listing):
+        return {'listing': inner.serialize}, 200
+    return {'message':'ALL GONE WRONG'}, 404

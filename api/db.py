@@ -17,6 +17,17 @@ class Listing(db.Model):
     def __repr__(self):
         return f'{self.id}: {self.price}'
 
+    @property
+    def serialize(self):
+       """Return object data in easily serializeable format"""
+       return {
+           'id'         : self.id,
+           'canonical_url': self.canonical_url,
+           'listing_type'  : self.listing_type,
+           'price': self.price,
+           'agency_name': self.agency_name,
+           'image_links': self.image_links,
+       }
 
     def save_to_db(self):
         db.session.add(self)
