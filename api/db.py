@@ -10,15 +10,17 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     canonical_url = db.Column(db.String(255), unique=True)
     listing_type = db.Column(db.String(12))
-    price = db.Column(db.Integer)
+    price = db.Column(db.String(50))
     agency_name = db.Column(db.String(50))
-    image_links = db.Column(db.String(250))
+    image_links = db.Column(db.Text)
 
     def __repr__(self):
         return f'{self.id}: {self.price}'
 
 
-
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 
@@ -32,6 +34,6 @@ def init_db_command():
 
 
 def init_app(app):
-    """Initialize the Flask app for database usage."""
+    """Initialize the Flask app for database usage"""
     db.init_app(app)
     app.cli.add_command(init_db_command)

@@ -1,7 +1,7 @@
 from flask_restful import Resource, Api, reqparse
 from . import app
-from .db import db, Listing
-from .utils import get_listing_agency, get_listig_id, get_listing_image_links, get_listing_price, get_listing_type
+from .db import Listing
+from .utils import get_listing_from_rightmove, return_if_listing_is_in_db
 
 api = Api(app)
 
@@ -9,18 +9,30 @@ api = Api(app)
 class ListingView(Resource):
 
     def get(self):
-        return 'hello, world!'
+        listings = Listing.query.all()
+        print(listings[0].price)
+        return {'listing' : 'okay'}, 200
+
 
     def post(self):
+        """Request Parsing"""
         parser = reqparse.RequestParser()
         parser.add_argument('url', type=str)
-        url = parser.parse_args()['url']
-        id = get_listig_id(url)
-        type = get_listing_type(url)
-        price = get_listing_price(url)
-        agency = get_listing_agency(url)
-        links = get_listing_image_links(url)
-        print(f'id: {id}, type: {type}, price: {price}, agency: {agency}\n links:{links}')
-        return id
+        listing_url = parser.parse_args()['url']
+        if not listing_url:
+            return {'message': 'bad request'}, 404
+
+        """Check if listing is already in DB"""
+        listing_item = return_if_listing_is_in_db(listing_url)
+        if listing_item:
+            print('take from DB')
+            return listing_item.id
+
+        """Get listing form RightMove and save to DB"""
+        listing_item = get_listing_from_rightmove(listing_url)
+        listing_item.save_to_db()
+
+        print('save to DB')
+        return listing_item.id, 205
 
 api.add_resource(ListingView, '/')
