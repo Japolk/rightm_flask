@@ -69,13 +69,14 @@ def get_listing_from_rightmove(url):
     if None in (id, type):
         return None
     """Page Parsing"""
-    start_request = time.time() 
+    start_request = time.time()
     html_page = requests.get(url).content
-    end_request = time.time() 
+    end_request = time.time()
     duration = round(end_request - start_request, 2)
     log_request_time_to_file(duration, 'External')
+    request_limit_timer(10)
     tree = html.fromstring(html_page)
-    
+
     price = get_listing_price(tree)
     agency = get_listing_agency(tree)
     links = get_listing_image_links(tree)
@@ -124,7 +125,12 @@ def save_db_to_csv_file(filename):
 def log_request_time_to_file(request_time, request_type):
     log_file = open('requests_time_log.txt', 'a')
     current_time = time.strftime("%d.%m.%Y %H:%M:%S")
-    log_file.write(f'[{current_time}] {request_type} request time: {request_time}\n')
+    log_file.write(
+        f'[{current_time}] {request_type} request time: {request_time}\n')
     print(f'[{current_time}] {request_type} request time: {request_time}')
     log_file.close()
 
+
+def request_limit_timer(limit):
+    delay = 60/limit
+    time.sleep(delay)
