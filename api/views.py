@@ -14,9 +14,8 @@ class ListingView(Resource):
         filename = 'listings.csv'
         save_db_to_csv_file(filename)
         return flask.send_file(f'../{filename}',
-                                as_attachment=True,
-                                mimetype='text/csv')
-
+                               as_attachment=True,
+                               mimetype='text/csv')
 
     def post(self):
         listing_list = []
@@ -28,8 +27,9 @@ class ListingView(Resource):
             return make_response('bad request!!!11')
 
         """Get listings from Rightmove or from DB"""
-        input_listings_dict = {get_listig_id(url) : url for url in listing_urls}
-        already_saved_listing_ids = [x[0] for x in db.session.query(Listing.id).filter(Listing.id.in_(input_listings_dict)).all()]
+        input_listings_dict = {get_listig_id(url): url for url in listing_urls}
+        already_saved_listing_ids = [x[0] for x in db.session.query(
+            Listing.id).filter(Listing.id.in_(input_listings_dict)).all()]
 
         for id, url in input_listings_dict.items():
             if id in already_saved_listing_ids:
@@ -40,12 +40,11 @@ class ListingView(Resource):
                 if listing_item:
                     listing_item.save_to_db()
                     listing_list.append(listing_item)
-                else: listing_list.append('wrong link')
-
+                else:
+                    listing_list.append('wrong link')
 
         print(listing_list)
         return make_response(listing_list)
 
 
 api.add_resource(ListingView, '/')
-
