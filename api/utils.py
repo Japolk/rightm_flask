@@ -1,9 +1,9 @@
-import re,requests
+import csv, re, requests
 from lxml import html
 from .db import Listing
 
 def get_listig_id(url):
-    """return listing id from the full url"""
+    """return listing id from the full url or None"""
     listing_id = re.search(r'property-(\d+).html',url)
     if not listing_id:
         return None
@@ -11,7 +11,7 @@ def get_listig_id(url):
 
 
 def get_listing_type(url):
-    """return listing type from the full url"""
+    """return listing type from the full url or None"""
     listing_type = re.search(r'property-(to|for)-([a-z]+)\/',url)
     if not listing_type:
         return None
@@ -57,8 +57,6 @@ def get_listing_image_links(url):
 def get_listing_from_db(id):
     """return listing from the Db if it's already there"""
     listing_item = Listing.query.filter_by(id=id).first()
-    if not listing_item:
-        return None
     return listing_item
 
 
@@ -87,3 +85,27 @@ def make_response(response):
     if isinstance(response, list):
         return {'listings': [part.serialize if isinstance(part, Listing) else part for part in response ]}, 200
     return {'message':'ALL GONE WRONG'}, 404
+
+
+
+def save_db_to_csv_file(filename):
+        listings_csv = open(f'{filename}', 'w')
+        outcsv = csv.writer(listings_csv)
+        outcsv.writerow(['id', 
+                        'canonical_url',
+                        'listing_type',
+                        'price',
+                        'agency_name',
+                        'image_links',
+                        ])
+
+        result = Listing.query.all()
+        for item in result:
+            outcsv.writerow([item.id, 
+                        item.canonical_url,
+                        item.listing_type,
+                        item.price,
+                        item.agency_name,
+                        item.image_links,
+
+            ])

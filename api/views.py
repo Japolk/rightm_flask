@@ -1,7 +1,9 @@
+import flask
 from flask_restful import Resource, Api, reqparse
+
 from . import app
 from .db import db, Listing
-from .utils import get_listing_from_rightmove, get_listing_from_db, make_response, get_listig_id
+from .utils import get_listing_from_rightmove, get_listing_from_db, make_response, get_listig_id, save_db_to_csv_file
 
 api = Api(app)
 
@@ -9,7 +11,11 @@ api = Api(app)
 class ListingView(Resource):
 
     def get(self):
-        return {'listing' : 'okay'}, 200
+        filename = 'listings.csv'
+        save_db_to_csv_file(filename)
+        return flask.send_file(f'../{filename}',
+                                as_attachment=True,
+                                mimetype='text/csv')
 
 
     def post(self):
