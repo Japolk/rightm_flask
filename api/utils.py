@@ -1,5 +1,6 @@
 import csv
 import re
+import time
 import requests
 from lxml import html
 from .db import Listing
@@ -21,10 +22,8 @@ def get_listing_type(url):
     return (listing_type.group(2))
 
 
-def get_listing_price(url):
+def get_listing_price(tree):
     """get listing price from the rightmove site"""
-    html_page = requests.get(url).content
-    tree = html.fromstring(html_page)
     try:
         price = tree.xpath(
             "//p[@id='propertyHeaderPrice']/strong")[0].text.strip()
@@ -33,10 +32,8 @@ def get_listing_price(url):
         return ''
 
 
-def get_listing_agency(url):
+def get_listing_agency(tree):
     """get listing agency from the rightmove site"""
-    html_page = requests.get(url).content
-    tree = html.fromstring(html_page)
     try:
         agency = tree.xpath(
             "//a[@id='aboutBranchLink']/strong")[0].text.strip()
@@ -45,11 +42,9 @@ def get_listing_agency(url):
         return ''
 
 
-def get_listing_image_links(url):
+def get_listing_image_links(tree):
     """get listing image urls from the rightmove site"""
     links = ''
-    html_page = requests.get(url).content
-    tree = html.fromstring(html_page)
     image_links = tree.xpath("//meta[@property='og:image']")
     for image_link in image_links:
         try:
@@ -73,9 +68,17 @@ def get_listing_from_rightmove(url):
     type = get_listing_type(url)
     if None in (id, type):
         return None
-    price = get_listing_price(url)
-    agency = get_listing_agency(url)
-    links = get_listing_image_links(url)
+    """Page Parsing"""
+    start_request = time.time() 
+    html_page = requests.get(url).content
+    end_request = time.time() 
+    duration = round(end_request - start_request, 2)
+    log_request_time_to_file(duration, 'External')
+    tree = html.fromstring(html_page)
+    
+    price = get_listing_price(tree)
+    agency = get_listing_agency(tree)
+    links = get_listing_image_links(tree)
     listing_item = Listing(id=id,
                            canonical_url=url,
                            listing_type=type,
@@ -115,3 +118,13 @@ def save_db_to_csv_file(filename):
                          item.image_links,
 
                          ])
+    listings_csv.close()
+
+
+def log_request_time_to_file(request_time, request_type):
+    log_file = open('requests_time_log.txt', 'a')
+    current_time = time.strftime("%d.%m.%Y %H:%M:%S")
+    log_file.write(f'[{current_time}] {request_type} request time: {request_time}\n')
+    print(f'[{current_time}] {request_type} request time: {request_time}')
+    log_file.close()
+

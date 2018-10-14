@@ -43,7 +43,6 @@ class ListingView(Resource):
                 else:
                     listing_list.append('wrong link')
 
-        print(listing_list)
         return make_response(listing_list)
 
 
