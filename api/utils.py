@@ -7,7 +7,7 @@ from .db import Listing
 
 
 def get_listig_id(url):
-    """return listing id from the full url or None"""
+    """return listing id or None from the full url """
     listing_id = re.search(r'property-(\d+).html', url)
     if not listing_id:
         return None
@@ -15,7 +15,7 @@ def get_listig_id(url):
 
 
 def get_listing_type(url):
-    """return listing type from the full url or None"""
+    """return listing type or None from the full url"""
     listing_type = re.search(r'property-(to|for)-([a-z]+)\/', url)
     if not listing_type:
         return None
@@ -23,7 +23,7 @@ def get_listing_type(url):
 
 
 def get_listing_price(tree):
-    """get listing price from the rightmove site"""
+    """get listing price from the rightmove page-tree"""
     try:
         price = tree.xpath(
             "//p[@id='propertyHeaderPrice']/strong")[0].text.strip()
@@ -33,7 +33,7 @@ def get_listing_price(tree):
 
 
 def get_listing_agency(tree):
-    """get listing agency from the rightmove site"""
+    """get listing agency from the rightmove page-tree"""
     try:
         agency = tree.xpath(
             "//a[@id='aboutBranchLink']/strong")[0].text.strip()
@@ -43,7 +43,7 @@ def get_listing_agency(tree):
 
 
 def get_listing_image_links(tree):
-    """get listing image urls from the rightmove site"""
+    """get listing image urls from the rightmove page-tree"""
     links = ''
     image_links = tree.xpath("//meta[@property='og:image']")
     for image_link in image_links:
@@ -94,8 +94,11 @@ def make_response(response):
     if isinstance(response, str):
         return {'message': response}, 404
     if isinstance(response, list):
-        return {'listings': [part.serialize if isinstance(part, Listing) else part for part in response]}, 200
-    return {'message': 'ALL GONE WRONG'}, 404
+        return {'listings':
+                [part.serialize if isinstance(
+                    part, Listing) else part for part in response]
+                }, 200
+    return {'message': 'something gone wrong'}, 404
 
 
 def save_db_to_csv_file(filename):
@@ -132,5 +135,10 @@ def log_request_time_to_file(request_time, request_type):
 
 
 def request_limit_timer(limit):
+    try:
+        f1 = open('limit.txt', 'r')
+        limit = int(next(f1))
+    except:
+        pass
     delay = 60/limit
     time.sleep(delay)

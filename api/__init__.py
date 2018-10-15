@@ -12,8 +12,10 @@ app.config.from_mapping(
 )
 
 db.init_app(app)
+from . import views
 
 
+"""Log internal requests timing"""
 @app.before_request
 def start_timer():
     g.start = time.time()
@@ -24,8 +26,5 @@ def start_timer():
 def log_request(response):
     now = time.time()
     duration = round(now - g.start, 2)
-    utils.log_request_time_to_file(duration, 'Internal')
+    utils.log_request_time_to_file(duration, 'Inner')
     return response
-
-
-from . import views

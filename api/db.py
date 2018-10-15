@@ -1,6 +1,8 @@
-from click import command, echo
+import flask
+from click import command, echo, argument
 from flask_sqlalchemy import SQLAlchemy
 from flask.cli import with_appcontext
+
 
 db = SQLAlchemy()
 
@@ -13,9 +15,6 @@ class Listing(db.Model):
     price = db.Column(db.String(50))
     agency_name = db.Column(db.String(50))
     image_links = db.Column(db.Text)
-
-    def __repr__(self):
-        return f'{self.id}: {self.price}'
 
     @property
     def serialize(self):
@@ -42,7 +41,18 @@ def init_db_command():
     echo("Initialized the database.")
 
 
+@command("set-limit")
+@argument('limit')
+"""Set requests limit from server to RightMove by 'limit' in a minute"""
+
+
+def take_limit(lim):
+    f = open('limit.txt', 'w')
+    f.write(lim)
+    f.close()
+
+
 def init_app(app):
-    """Initialize the Flask app for database usage"""
     db.init_app(app)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(take_limit)

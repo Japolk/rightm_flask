@@ -8,15 +8,21 @@ from .utils import get_listing_from_rightmove, get_listing_from_db, make_respons
 api = Api(app)
 
 
-class ListingView(Resource):
-
+class IndexView(Resource):
     def get(self):
-        filename = 'listings.csv'
-        save_db_to_csv_file(filename)
-        return flask.send_file(f'../{filename}',
-                               as_attachment=True,
-                               mimetype='text/csv')
+        return 'Hello, this is Rightmove parser API'
 
+
+class GetCsvFromDBView(Resource):
+    def get(self):
+    filename = 'listings.csv'
+    save_db_to_csv_file(filename)
+    return flask.send_file(f'../{filename}',
+                           as_attachment=True,
+                           mimetype='text/csv')
+
+
+class AddListingView(Resource):
     def post(self):
         listing_list = []
         """Request Parameters Parsing"""
@@ -46,4 +52,6 @@ class ListingView(Resource):
         return make_response(listing_list)
 
 
-api.add_resource(ListingView, '/')
+api.add_resource(IndexView, '/')
+api.add_resource(AddListingView, '/api/add/')
+api.add_resource(GetCsvFromDBView, '/api/csv/')
