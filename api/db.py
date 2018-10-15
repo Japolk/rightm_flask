@@ -43,14 +43,15 @@ def init_db_command():
 
 """Set requests limit from server to RightMove by 'limit' in a minute"""
 @command("set-limit")
+@with_appcontext
 @argument('limit')
-def take_limit(lim):
+def set_limit(limit):
     f = open('limit.txt', 'w')
-    f.write(lim)
+    f.write(limit)
     f.close()
 
 
 def init_app(app):
     db.init_app(app)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(take_limit)
+    app.cli.add_command(set_limit)

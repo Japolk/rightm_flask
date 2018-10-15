@@ -134,7 +134,7 @@ def log_request_time_to_file(request_time, request_type):
     log_file.close()
 
 
-def request_limit_timer(limit):
+def request_limit_timer(limit=10):
     try:
         f1 = open('limit.txt', 'r')
         limit = int(next(f1))

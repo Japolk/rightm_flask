@@ -15,11 +15,11 @@ class IndexView(Resource):
 
 class GetCsvFromDBView(Resource):
     def get(self):
-    filename = 'listings.csv'
-    save_db_to_csv_file(filename)
-    return flask.send_file(f'../{filename}',
-                           as_attachment=True,
-                           mimetype='text/csv')
+        filename = 'listings.csv'
+        save_db_to_csv_file(filename)
+        return flask.send_file(f'../{filename}',
+                                as_attachment=True,
+                                mimetype='text/csv')
 
 
 class AddListingView(Resource):
