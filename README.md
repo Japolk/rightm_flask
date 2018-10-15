@@ -32,10 +32,6 @@ Init Database:
 ```
 flask init-db
 ```
-Limit requests from server to RightMove by N in a minute. (10 by default)
-```
-flask set-limit [LIMIT]
-```
 Run application:
 ```
 flask run 
@@ -59,13 +55,10 @@ docker pull kvartira92/rightm_flask
 ```
 Run Docker container:
 ```
-sudo docker run rightm_flask:latest [REQUESTS_LIMIT]
+sudo docker run -d -p 5000:5000 --rm -e REQUESTS_LIMIT=10 rightm_flask:latest
 
 ```
-for example:
-```
-sudo docker run -d  -p 5000:5000 --rm rightm_flask:latest 12
-```
+
 
 ## Authors
 * Ishchenko Alexey
