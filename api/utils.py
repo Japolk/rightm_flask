@@ -1,9 +1,11 @@
 import csv
+import os
 import re
 import time
 import requests
 from lxml import html
 from .db import Listing
+
 
 
 def get_listig_id(url):
@@ -74,7 +76,7 @@ def get_listing_from_rightmove(url):
     end_request = time.time()
     duration = round(end_request - start_request, 2)
     log_request_time_to_file(duration, 'External')
-    request_limit_timer(10)
+    request_limit_timer()
     tree = html.fromstring(html_page)
 
     price = get_listing_price(tree)
@@ -134,11 +136,10 @@ def log_request_time_to_file(request_time, request_type):
     log_file.close()
 
 
-def request_limit_timer(limit=10):
+def request_limit_timer():
     try:
-        f1 = open('limit.txt', 'r')
-        limit = int(next(f1))
+        requests_limit = int(os.environ.get('REQUESTS_LIMIT'))
     except:
-        pass
-    delay = 60/limit
+        requests_limit = 10
+    delay = 60/requests_limit
     time.sleep(delay)

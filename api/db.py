@@ -1,5 +1,4 @@
-import flask
-from click import command, echo, argument
+from click import command, echo
 from flask_sqlalchemy import SQLAlchemy
 from flask.cli import with_appcontext
 
@@ -41,17 +40,7 @@ def init_db_command():
     echo("Initialized the database.")
 
 
-"""Set requests limit from server to RightMove by 'limit' in a minute"""
-@command("set-limit")
-@with_appcontext
-@argument('limit')
-def set_limit(limit):
-    f = open('limit.txt', 'w')
-    f.write(limit)
-    f.close()
-
 
 def init_app(app):
     db.init_app(app)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(set_limit)
