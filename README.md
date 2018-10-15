@@ -3,9 +3,9 @@
 
 ### Prerequisites
 
-Python 3.6.5
-virtualenv
-Docker
+* Python 3.6.5
+* virtualenv
+* Docker
 
 ### Installing
 
@@ -43,10 +43,10 @@ flask run
 ## API
 
 Application has 3 endpoints:
-*[GET]  '/'            Greeting page 
-*[POST] '/api/add/'    Add new rightmove_urls
-  Parameters: 'urls': one string or list of strings
-*[GET] '/api/csv/'     Return csv file with DB-data
+* [GET]  '/'            Greeting page 
+* [POST] '/api/add/'    Add new rightmove_urls. Parameters: 'urls': one string or list of strings
+* [GET] '/api/csv/'     Return csv file with DB-data 
+
 
 
 ## Authors
