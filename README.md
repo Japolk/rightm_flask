@@ -48,7 +48,24 @@ Application has 3 endpoints:
   Parameters: 'urls': one string or list of strings
 * [GET] '/api/csv/':     Return csv file with DB-data 
 
+## Docker
+You can make image with Docker file:
+```
+docker build -t rightm_flask:latest .
+```
+Or pull from Docker Hub:
+```
+docker pull kvartira92/rightm_flask
+```
+Run Docker container:
+```
+sudo docker run rightm_flask:latest [REQUESTS_LIMIT]
 
+```
+for example:
+```
+sudo docker run -d  -p 5000:5000 --rm rightm_flask:latest 12
+```
 
 ## Authors
 * Ishchenko Alexey
