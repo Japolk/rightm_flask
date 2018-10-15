@@ -59,6 +59,8 @@ docker run -d -p 5000:5000 --rm -e REQUESTS_LIMIT=10 rightm_flask:latest
 
 ```
 
+REQUESTS_LIMIT - Limit requests by N in a minute (10 by defaul)
+
 
 ## Authors
 * Ishchenko Alexey
