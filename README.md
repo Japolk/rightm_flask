@@ -55,7 +55,7 @@ docker pull kvartira92/rightm_flask
 ```
 Run Docker container:
 ```
-sudo docker run -d -p 5000:5000 --rm -e REQUESTS_LIMIT=10 rightm_flask:latest
+docker run -d -p 5000:5000 --rm -e REQUESTS_LIMIT=10 rightm_flask:latest
 
 ```
 
