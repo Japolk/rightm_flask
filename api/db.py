@@ -41,11 +41,9 @@ def init_db_command():
     echo("Initialized the database.")
 
 
+"""Set requests limit from server to RightMove by 'limit' in a minute"""
 @command("set-limit")
 @argument('limit')
-"""Set requests limit from server to RightMove by 'limit' in a minute"""
-
-
 def take_limit(lim):
     f = open('limit.txt', 'w')
     f.write(lim)
